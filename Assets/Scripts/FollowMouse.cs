@@ -15,6 +15,7 @@ public class FollowMouse : MonoBehaviour
     private GameObject selectedObject;
     private bool isDragging = false;
     private float rotatationScale = 0.1f;
+    private float scalingScale = 0.001f;
 
     /*
     NOTE: PLEASE MAKE SURE TO TURN ON THE GIZMOS. OTHERWISE, THE RAY AND THE SPHERE WILL NOT APPEAR.
@@ -30,6 +31,9 @@ public class FollowMouse : MonoBehaviour
 
         ray = Camera.main.ScreenPointToRay(pos);
         ray.direction = (ray.origin - Camera.main.transform.position).normalized;
+
+        // make ray start from slightly below the camera, so that it's not a single point
+        ray.direction = ray.direction + new Vector3(0, 0.5f, 0);
 
         Debug.DrawRay(ray.origin, ray.direction * rayLength, Color.red);
 
@@ -93,6 +97,17 @@ public class FollowMouse : MonoBehaviour
             if (Input.GetKey(KeyCode.D))
             {
                 selectedObject.transform.RotateAround(Camera.main.transform.position, Camera.main.transform.up, rotatationScale);
+            }
+            // uniformly scale the object using left control and left shift
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                selectedObject.transform.localScale += scalingScale * Vector3.one;
+                // limit the scale to 0.1 to 10
+                selectedObject.transform.localScale = Vector3.Max(selectedObject.transform.localScale, new Vector3(0.1f, 0.1f, 0.1f));
+            }
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                selectedObject.transform.localScale -= scalingScale * Vector3.one;
             }
         }
     }
